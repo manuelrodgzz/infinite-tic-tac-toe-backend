@@ -5,6 +5,7 @@ import matchHandlers from './matchHandlers.js'
 import dotenv from 'dotenv'
 
 dotenv.config()
+const port = process.env.PORT
 
 const app = express()
 const server = createServer(app)
@@ -22,6 +23,6 @@ function onConnection(socket) {
 
 io.on('connection', onConnection)
 
-server.listen(3001, () => {
-  console.log('Server up and running')
+server.listen(port, () => {
+  console.log('Server up and running. Port:', port)
 })
