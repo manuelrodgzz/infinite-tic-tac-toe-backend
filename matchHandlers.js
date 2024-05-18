@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io'
 import crypto from 'node:crypto'
 import response from './utils/response.js'
 
-const DISCONNECTION_TIME_ALLOWED = 60_000
+const DISCONNECTION_TIME_ALLOWED = 120_000
 
 const matches = new Map()
 
