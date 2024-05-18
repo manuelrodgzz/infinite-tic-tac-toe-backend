@@ -125,12 +125,24 @@ export default function matchHandlers(io, socket) {
     return Object.keys(match.players).find(id => id !== playerId)
   }
 
-  function cleanMatchState(match = {}) {
+  function getPlayerIdByMarker(players, marker) {
+    const [id = null] = Object.entries(players).find(
+      ([id, player]) => player?.marker === marker
+    ) || []
+
+    return id
+  }
+
+  function cleanMatchState(match = {}, isRematch = false) {
+    const lastWinnerMarker = match.players[match.lastWinnerId]?.marker || 0
     return {
       ...match,
       playsHistory: [[], []],
       cells: new Array(9).fill({lastTouched: null, active: false}),
-      currentPlayer: 0,
+      currentPlayer: getPlayerIdByMarker(
+        match.players,
+        isRematch ? lastWinnerMarker : 0
+      ),
     }
   }
   
@@ -152,7 +164,8 @@ export default function matchHandlers(io, socket) {
             isReady: false,
             socketId: socket.id,
           }
-        }
+        },
+        lastWinnerId: undefined,
       })
     )
 
@@ -326,7 +339,7 @@ export default function matchHandlers(io, socket) {
         {
           cells: matchUpdates.cells,
           playsHistory: matchUpdates.playsHistory,
-          currentPlayer: matchUpdates.currentPlayer,    
+          currentPlayer: matchUpdates.currentPlayer,
         }
       )
     )
@@ -361,7 +374,8 @@ export default function matchHandlers(io, socket) {
             [oponentId]: {
               isReady: false,
             }
-          }
+          },
+          lastWinnerId: matchUpdates.lastWinnerId
         }
       )
     )
@@ -372,7 +386,7 @@ export default function matchHandlers(io, socket) {
     io.to(matchId).emit(
       'match:end',
       updatedMatch,
-      updatedMatch.players[playerId]
+      playerId
     )
   })
 
@@ -397,7 +411,7 @@ export default function matchHandlers(io, socket) {
       const oponentId = getOponentId(match, playerId)
 
       if (match.players[oponentId].isReady) {
-        const cleanMatch = cleanMatchState(match)
+        const cleanMatch = cleanMatchState(match, true)
         matches.set(
           matchId,
           updateMatch(
