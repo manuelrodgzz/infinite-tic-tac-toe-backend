@@ -75,9 +75,17 @@ function updateMatch(obj, updates) {
 
   Object.entries(updates).forEach(([key, val]) => {
     if (typeof val === 'object') {
-      if (val !== null) {
-        objCopy[key] = updateMatch(objCopy[key], val)
+      if (val === null) {
+        return
       }
+
+      // Arrays are not merged
+      if (Array.isArray(val)) {
+        objCopy[key] = val
+        return
+      }
+
+      objCopy[key] = updateMatch(objCopy[key], val)
       return
     }
 
@@ -99,8 +107,8 @@ function updateMatch(obj, updates) {
 */
 export default function matchHandlers(io, socket) {
   function emitMatchState(matchId) {
-    console.log('[EMIT]: match:update')
-    io.to(matchId).emit('match:update', matches.get(matchId))
+    const match = matches.get(matchId)
+    io.to(matchId).emit('match:update', matches.get(matchId), match)
   }
 
   function getMatch(matchId) {
