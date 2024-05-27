@@ -1,11 +1,14 @@
 {
   "name": "infinite-tic-tac-toe-backend",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "pm2 start index.js --name \"infinite-tic-tac-toe-backend\"",
+    "stop": "pm2 stop infinite-tic-tac-toe-backend",
+    "restart": "pm2 restart infinite-tic-tac-toe-backend --update-env",
+    "status": "pm2 status",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,6 +18,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "pm2": "^5.4.0",
     "socket.io": "^4.7.5"
   },
   "devDependencies": {
