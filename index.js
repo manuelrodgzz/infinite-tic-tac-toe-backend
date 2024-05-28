@@ -4,13 +4,18 @@ import http from 'node:http'
 import https from 'node:https'
 import matchHandlers from './matchHandlers.js'
 import dotenv from 'dotenv'
+import fs from 'fs'
 
 dotenv.config()
 const port = process.env.PORT
 
 const app = express()
 const protocol = process.env.USE_HTTPS ? https : http
-const server = protocol.createServer(app)
+const options = process.env.USE_HTTPS ? {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+} : {}
+const server = protocol.createServer(options, app)
 
 const io = new Server(server, {
   cors: {
