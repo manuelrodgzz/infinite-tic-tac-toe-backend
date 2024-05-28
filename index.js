@@ -1,6 +1,7 @@
 import { Server } from 'socket.io'
 import express from 'express'
-import { createServer } from 'node:http'
+import http from 'node:http'
+import https from 'node:https'
 import matchHandlers from './matchHandlers.js'
 import dotenv from 'dotenv'
 
@@ -8,7 +9,8 @@ dotenv.config()
 const port = process.env.PORT
 
 const app = express()
-const server = createServer(app)
+const protocol = process.env.USE_HTTPS ? https : http
+const server = protocol.createServer(app)
 
 const io = new Server(server, {
   cors: {
